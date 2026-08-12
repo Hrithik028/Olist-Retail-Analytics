@@ -4,7 +4,7 @@
 
 End-to-end retail analytics pipeline built using Python, PostgreSQL, SQL and Power BI, transforming approximately 100K Olist e-commerce orders through Bronze, Silver and Gold layers into a reporting-ready star schema.
 
-> **Dashboard preview:** The Power BI report is included at [`dashboard/dashboard.pbix`](dashboard/dashboard.pbix). No suitable local screenshot was available, so a results image has intentionally not been fabricated. Add `dashboard/dashboard-preview.png` when an exported dashboard image is available.
+> **Dashboard preview:** The Power BI report is included at [`dashboard/dashboard.pbix`](dashboard/dashboard.pbix).
 
 ## Project Overview
 
