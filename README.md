@@ -4,7 +4,9 @@
 
 End-to-end retail analytics pipeline built using Python, PostgreSQL, SQL and Power BI, transforming approximately 100K Olist e-commerce orders through Bronze, Silver and Gold layers into a reporting-ready star schema.
 
-> **Dashboard preview:** The Power BI report is included at [`dashboard/dashboard.pbix`](dashboard/dashboard.pbix).
+![Power BI Dashboard](dashboard/dashboard-preview.png)
+
+The interactive Power BI report is included at [`dashboard/dashboard.pbix`](dashboard/dashboard.pbix).
 
 ## Project Overview
 
@@ -190,7 +192,8 @@ olist-retail-analytics/
 │   ├── schema.sql
 │   └── analysis.sql
 ├── dashboard/
-│   └── dashboard.pbix
+│   ├── dashboard.pbix
+│   └── dashboard-preview.png
 ├── data/
 │   └── README.md
 ├── .env.example
@@ -255,7 +258,6 @@ Open `dashboard/dashboard.pbix` and update the PostgreSQL data-source credential
 - The dataset covers historical Olist activity from 2016 to 2018 and does not describe current retail performance.
 - Silver and Gold loads replace tables rather than performing production-grade incremental upserts.
 - Payments and reviews remain outside the sales fact because their grains differ from order items.
-- The Power BI file is included, but the repository does not yet contain an exported dashboard preview image.
 - Pipeline execution requires a local PostgreSQL instance and a separately downloaded dataset.
 
 ## Future Improvements
@@ -265,4 +267,3 @@ Open `dashboard/dashboard.pbix` and update the PostgreSQL data-source credential
 - Implement incremental database loading
 - Model payments and reviews at their own grains
 - Add CI checks for Python syntax, SQL formatting and secret detection
-- Export and add a dashboard preview image
