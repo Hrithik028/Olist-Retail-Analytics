@@ -1,12 +1,24 @@
 # Olist Retail Analytics
 
-**Medallion Pipeline, PostgreSQL Star Schema & Power BI**
+Python ingestion · PostgreSQL dimensional modelling · SQL analysis · Power BI
 
-End-to-end retail analytics pipeline built using Python, PostgreSQL, SQL and Power BI, transforming approximately 100K Olist e-commerce orders through Bronze, Silver and Gold layers into a reporting-ready star schema.
+An end-to-end retail analytics project that transforms the public Olist
+e-commerce dataset through Bronze, Silver and Gold layers into an
+order-item-grain reporting model.
 
 ![Power BI Dashboard](dashboard/dashboard-preview.png)
 
 The interactive Power BI report is included at [`dashboard/dashboard.pbix`](dashboard/dashboard.pbix).
+
+## At a glance
+
+| Capability | Implementation |
+| --- | --- |
+| Ingestion | Source-preserving Bronze CSVs with load timestamp and source filename |
+| Transformation | Pandas cleaning, type conversion, category translation and relationship checks |
+| Warehouse | PostgreSQL Silver tables and a constrained Gold star schema |
+| Analysis | Aggregation, window functions, dimensional joins and query-plan inspection |
+| Reporting | Power BI model with four KPIs, three analytical visuals and a year filter |
 
 ## Project Overview
 
@@ -18,12 +30,19 @@ The completed pipeline produced 112,650 order-item fact rows. It is designed as 
 
 ```mermaid
 flowchart LR
-    A[Olist CSV Files] --> B[Bronze Layer]
-    B --> C[Silver Layer]
-    C --> D[(PostgreSQL)]
-    D --> E[Gold Star Schema]
-    E --> F[Power BI Dashboard]
+    A[Nine Olist CSV files] --> B[Python Bronze ingestion]
+    B --> C[Source-preserving Bronze CSVs]
+    C --> D[Python cleaning and validation]
+    D --> E[(PostgreSQL Silver tables)]
+    E --> F[Python dimensional modelling]
+    F --> G[(PostgreSQL Gold star schema)]
+    G --> H[SQL analysis]
+    G --> I[Power BI report]
 ```
+
+The three Python stages run sequentially. Silver and Gold use
+`if_exists="replace"`, so this is a reproducible batch workflow rather than an
+incremental production warehouse.
 
 ## Dataset
 
@@ -171,7 +190,11 @@ DIVIDE(
 
 Total Sales uses product price; freight remains available separately and is not included in the measure.
 
-## Key Results
+## Recorded project results
+
+The following figures come from the completed project run documented in the
+repository; raw data is intentionally not committed, so they are not recomputed
+by cloning the repository alone.
 
 - Approximately 100K historical e-commerce orders transformed
 - 112,650 rows in the order-item-grain sales fact table
@@ -253,11 +276,38 @@ psql -U postgres -d olist -f sql/analysis.sql
 
 Open `dashboard/dashboard.pbix` and update the PostgreSQL data-source credentials for your local environment if prompted.
 
+## Configuration and security
+
+`.env.example` documents the PostgreSQL host, port, database and user settings.
+Copy it to an ignored `.env` file and supply `DB_PASSWORD` locally. Never
+commit database passwords or raw customer/order exports. SQLAlchemy constructs
+the connection URL without interpolating the password into source code.
+
+The raw and generated Bronze datasets are excluded by `.gitignore`. The
+repository's MIT licence applies to the project code and documentation; the
+Olist dataset remains subject to its original provider's terms.
+
+## Verification
+
+There is no automated test suite in the published repository. Safe local checks
+that do not require the dataset or PostgreSQL include:
+
+```powershell
+python -m compileall -q src
+git diff --check
+```
+
+Full verification requires all nine source CSVs and a PostgreSQL database. Run
+each Python stage, review its printed duplicate, lifecycle, coordinate and
+relationship checks, then execute `sql/schema.sql` and `sql/analysis.sql`.
+
 ## Limitations
 
 - The dataset covers historical Olist activity from 2016 to 2018 and does not describe current retail performance.
 - Silver and Gold loads replace tables rather than performing production-grade incremental upserts.
 - Payments and reviews remain outside the sales fact because their grains differ from order items.
+- Data-quality checks are printed during execution; most do not fail the load automatically.
+- `sql/schema.sql` is intended for a newly built Gold schema and is not idempotent.
 - Pipeline execution requires a local PostgreSQL instance and a separately downloaded dataset.
 
 ## Future Improvements
